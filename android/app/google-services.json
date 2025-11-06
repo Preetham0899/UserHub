@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "743877913749",
+    "project_id": "userhub-417a5",
+    "storage_bucket": "userhub-417a5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743877913749:android:cb6a6e8eae3fb2b9653f9c",
+        "android_client_info": {
+          "package_name": "com.userhub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANYhyB4-lQZXNlBOWC8sfosYs2g87fP_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
