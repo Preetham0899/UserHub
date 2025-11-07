@@ -22,6 +22,16 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
+        <intent-filter android:label="deep_link">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                
+                <data android:scheme="userhub" android:host="login" />
+                <data android:scheme="userhub" android:host="register"/> 
+            </intent-filter>
       </activity>
     </application>
 </manifest>
