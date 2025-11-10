@@ -1,23 +1,19 @@
 default_platform(:android)
 
 platform :android do
-  desc "Build release AAB and upload to Play Store Internal track"
-  lane :release do
-    gradle(task: "bundle", build_type: "Release")
-    upload_to_play_store(
-      track: "internal",
-      aab: "../app/build/outputs/bundle/release/app-release.aab"
+  desc "Build and distribute release APK to Firebase App Distribution"
+  lane :firebase_distribution do
+    gradle(
+      task: "assembleRelease",
+      project_dir: "./",
+      build_type: "Release"
     )
-  end
 
-  desc "Build release APK and upload to Firebase App Distribution"
-  lane :internal do
-    gradle(task: "assemble", build_type: "Release")
     firebase_app_distribution(
       app: ENV["FIREBASE_APP_ID_ANDROID"],
-      testers: "youremail@example.com",
-      release_notes: "Automated build from Fastlane",
-      firebase_cli_token: ENV["FIREBASE_TOKEN"]
+      firebase_cli_token: ENV["FIREBASE_TOKEN"],
+      release_notes: "🚀 Automated CI/CD build from GitHub Actions",
+      testers: "preetham0899@gmail.com"
     )
   end
 end

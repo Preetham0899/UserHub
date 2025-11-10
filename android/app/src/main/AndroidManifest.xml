@@ -27,10 +27,7 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
-                
-                <data android:scheme="userhub" android:host="login" />
-                <data android:scheme="userhub" android:host="register"/> 
+                 <data android:scheme="userhub" />
             </intent-filter>
       </activity>
     </application>

@@ -11,13 +11,13 @@ import { requestUserPermission, notificationListener } from './src/utils/notific
 
 export default function App() {
   useEffect(() => {
-    // Request permission to receive notifications
+    // Request 
     requestUserPermission();
 
-    // Listen for foreground/background/quit notifications
+    
     const unsubscribe = notificationListener();
 
-    // Cleanup listeners when component unmounts
+   
     return unsubscribe;
   }, []);
 

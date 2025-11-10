@@ -1,9 +1,22 @@
-import React from 'react';
+// src/navigation/AppNavigator.js
+// -----------------------------------------------------------------------------
+// ✅ Handles:
+// 1. Deep linking via Firebase notification data (userhub://register, etc.)
+// 2. Dynamic initial route based on login status & deep link
+// 3. Navigation for authenticated and unauthenticated users
+// -----------------------------------------------------------------------------
+
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
+import { Linking, Text } from 'react-native';
+import messaging from '@react-native-firebase/messaging';
+import { navigationRef, navigate } from '../utils/navigationRef';
+
+
 
 // Screens
 import LoginScreen from '../screens/LoginScreen';
@@ -16,7 +29,7 @@ import ChatScreen from '../screens/ChatScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// Linking configuration
+// Linking Configuration (maps deep links to routes)
 const linking = {
   prefixes: ['userhub://'],
   config: {
@@ -35,6 +48,7 @@ const linking = {
   },
 };
 
+// 🔹 Bottom Tabs for Authenticated Users
 const MainTabs = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
@@ -64,12 +78,68 @@ const MainTabs = () => (
   </Tab.Navigator>
 );
 
+// 🔹 Main App Navigation
 export default function AppNavigator() {
   const { user } = useSelector((state) => state.auth);
+  const [initialRoute, setInitialRoute] = useState(null);
+
+  useEffect(() => {
+  const handleNotificationLaunch = async () => {
+    const remoteMessage = await messaging().getInitialNotification();
+    const deepLink = remoteMessage?.data?.deeplink;
+    console.log(' Cold start deeplink:', deepLink);
+
+    if (deepLink) {
+      const route = deepLink.includes('register')
+        ? 'Register'
+        : deepLink.includes('login')
+        ? 'Login'
+        : user
+        ? 'Main'
+        : 'Login';
+      setInitialRoute(route);
+
+      // Wait for NavigationContainer to mount
+      const interval = setInterval(() => {
+        if (navigationRef.isReady()) {
+          console.log(' Navigation ready, navigating to:', route);
+          navigate(route);
+          clearInterval(interval);
+        }
+      }, 300);
+    } else {
+      setInitialRoute(user ? 'Main' : 'Login');
+    }
+  };
+
+  handleNotificationLaunch();
+
+  // Handle background taps
+  const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
+    const deepLink = remoteMessage?.data?.deeplink;
+    if (deepLink) {
+      const route = deepLink.includes('register')
+        ? 'Register'
+        : deepLink.includes('login')
+        ? 'Login'
+        : 'Main';
+      console.log(' Background notification opened:', route);
+      navigate(route);
+    }
+  });
+
+  return unsubscribe;
+}, [user]);
+
+
+
+  if (!initialRoute) {
+    return <Text style={{ textAlign: 'center', marginTop: 50 }}>Loading navigation...</Text>;
+  }
 
   return (
-    <NavigationContainer linking={linking}>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <NavigationContainer linking={linking} ref={navigationRef}>
+      <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
         {user ? (
           <>
             <Stack.Screen name="Main" component={MainTabs} />
@@ -87,9 +157,26 @@ export default function AppNavigator() {
           </>
         ) : (
           <>
-            
-            <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: true, title: 'Login', headerStyle: { backgroundColor: '#0D47A1' }, headerTintColor: '#fff' }} />
-            <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: true, title: 'Register', headerStyle: { backgroundColor: '#0D47A1' }, headerTintColor: '#fff' }} />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{
+                headerShown: true,
+                title: 'Login',
+                headerStyle: { backgroundColor: '#0D47A1' },
+                headerTintColor: '#fff',
+              }}
+            />
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+              options={{
+                headerShown: true,
+                title: 'Register',
+                headerStyle: { backgroundColor: '#0D47A1' },
+                headerTintColor: '#fff',
+              }}
+            />
           </>
         )}
       </Stack.Navigator>

@@ -46,7 +46,7 @@ describe('LoginScreen Tests', () => {
     });
   });
 
-  //  Successful login dispatch
+  //  Successful login dispatch and navigation
   it('dispatches loginRequest when valid credentials are entered', async () => {
     const { getByPlaceholderText, getByText } = render(
       <LoginScreen navigation={mockNavigation} />
