@@ -33,7 +33,7 @@ jobs:
           cd android
           ./gradlew clean
           ./gradlew assembleRelease --no-daemon
-          echo "✅ Build completed, checking output folder..."
+          echo "Build completed, checking output folder..."
           ls -lh app/build/outputs/apk/release/
 
       - name: Verify APK existence
@@ -46,7 +46,7 @@ jobs:
         with:
           appId: ${{ secrets.ANDROID_FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-          groups: testers
+          groups: preetham.test@gmail.com,preethamkaveripaku@gmail.com
           file: android/app/build/outputs/apk/release/app-release.apk
 
       - name: Upload build artifacts (for debugging)
